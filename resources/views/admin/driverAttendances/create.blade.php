@@ -103,76 +103,84 @@
             </div>
           </div>
 
-          @foreach($drivers as $i => $value)
-              <div class="row align-items-center mb-3">
-                <div class="col-auto pr-0 d-flex align-items-center">
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input driver-checkbox" data-driver-id="{{ $i }}" style="margin-top: 0;">
-                  </div>
-                </div>
-                <input type="hidden" class="form-control" name="driver_id[]" value="{{ $value->id }}">
+          @foreach($drivers as $i => $driver)
+    <div class="row align-items-center mb-3">
+        <!-- Checkbox -->
+        <div class="col-auto pr-0 d-flex align-items-center">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input driver-checkbox" data-driver-id="{{ $driver->id }}" style="margin-top: 0;">
+            </div>
+        </div>
+        <input type="hidden" class="form-control" name="driver_id[]" value="{{ $driver->id }}">
 
-                <!-- Driver -->
-                <div class="col-md-2">
-                  <div class="form-group">
-                    <strong>Driver</strong>
-                    <input type="text" class="form-control" name="full_name[]" value="{{ $value->full_name }}" readonly>
-                  </div>
-                </div>
+        <!-- Driver Name -->
+        <div class="col-md-2">
+            <div class="form-group">
+                <strong>Driver</strong>
+                <input type="text" class="form-control" name="full_name[]" value="{{ $driver->full_name }}" readonly>
+            </div>
+        </div>
 
-                  <div class="col-md-2">
-                      <div class="form-group">
-                          <strong>Cnic No</strong>
-                          <input type="text" class="form-control" name="cnicno[]" value="{{ $value->cnic_no }}" readonly>
-                      </div>
-                  </div>
+        <!-- CNIC -->
+        <div class="col-md-2">
+            <div class="form-group">
+                <strong>CNIC No</strong>
+                <input type="text" class="form-control" name="cnicno[]" value="{{ $driver->cnic_no }}" readonly>
+            </div>
+        </div>
 
-                  <div class="col-md-2">
-                      <div class="form-group">
-                          <strong>Account No</strong>
-                          <input type="text" class="form-control" name="accountno[]" value="{{ $value->account_no }}" readonly>
-                      </div>
-                  </div>
+        <!-- Account No -->
+        <div class="col-md-2">
+            <div class="form-group">
+                <strong>Account No</strong>
+                <input type="text" class="form-control" name="accountno[]" value="{{ $driver->account_no }}" readonly>
+            </div>
+        </div>
 
-                <!-- Shift -->
-                <div class="col-md-1">
-                  <div class="form-group">
-                    <strong>Shift</strong>
-                    <input type="text" class="form-control" name="shift[]" value="{{ $value->shiftTiming ? $value->shiftTiming->name . ' (' . \Carbon\Carbon::parse($value->shiftTiming->start_time)->format('h:i A') . ' - ' . \Carbon\Carbon::parse($value->shiftTiming->end_time)->format('h:i A') . ')' : 'N/A' }}" readonly>
-                  </div>
-                </div>
+        <!-- Shift -->
+        <div class="col-md-1">
+            <div class="form-group">
+                <strong>Shift</strong>
+                <input type="text" class="form-control" name="shift[]" value="{{ $driver->shiftTiming ? $driver->shiftTiming->name . ' (' . \Carbon\Carbon::parse($driver->shiftTiming->start_time)->format('h:i A') . ' - ' . \Carbon\Carbon::parse($driver->shiftTiming->end_time)->format('h:i A') . ')' : 'N/A' }}" readonly>
+            </div>
+        </div>
 
-                <!-- Status -->
-                <div class="col-md-1">
-                  <div class="form-group">
-                    <strong>Status</strong>
-                    <input type="text" class="form-control" name="driverStatus[]" value="{{ $value->driverStatus->name }}" readonly>
-                  </div>
-                </div>
-{{--                  <div class="col-md-1">--}}
-{{--                      <div class="form-group">--}}
-{{--                          <strong>Station</strong>--}}
-{{--                          <input type="text" class="form-control" name="driverStatus[]" value="{{ $value->vehicle->station->area ?? '' }}" disabled>--}}
-{{--                      </div>--}}
-{{--                  </div>--}}
+        <!-- Status -->
+        <div class="col-md-1">
+            <div class="form-group">
+                <strong>Status</strong>
+                <input type="text" class="form-control" name="driverStatus[]" value="{{ $driver->driverStatus->name ?? 'N/A' }}" readonly>
+            </div>
+        </div>
 
-                <!-- Attendance -->
-                <div class="col-md-2">
-                  <div class="form-group">
-                    <strong>Attendance</strong>
-                    <select class="custom-select @error('status.' . $i) is-invalid @enderror" name="status[]" data-driver-idx="{{ $i }}">
-                      <option value="">Select</option>
-                      @foreach($driver_attendance_status as $statusKey => $statusLabel)
-                        <option value="{{$statusKey}}" {{ old('status.'.$i) == (string)$statusKey ? 'selected' : '' }}>{{$statusLabel}}</option>
-                      @endforeach
-                    </select>
-                    @error("status.$i")
-                      <label class="text-danger">{{ $message }}</label>
-                    @enderror
-                  </div>
-                </div>
-              </div>
-          @endforeach
+        <!-- Station (optional, if needed) -->
+        {{-- 
+        <div class="col-md-1">
+            <div class="form-group">
+                <strong>Station</strong>
+                <input type="text" class="form-control" name="station[]" value="{{ $driver->vehicle->station->area ?? '' }}" readonly>
+            </div>
+        </div> 
+        --}}
+
+        <!-- Attendance -->
+        <div class="col-md-2">
+            <div class="form-group">
+                <strong>Attendance</strong>
+                <select class="custom-select @error('status.' . $i) is-invalid @enderror" name="status[]" data-driver-idx="{{ $i }}">
+                    <option value="">Select</option>
+                    @foreach($driver_attendance_status as $statusKey => $statusLabel)
+                        <option value="{{ $statusKey }}" {{ old('status.' . $i) == (string)$statusKey ? 'selected' : '' }}>{{ $statusLabel }}</option>
+                    @endforeach
+                </select>
+                @error("status.$i")
+                    <label class="text-danger">{{ $message }}</label>
+                @enderror
+            </div>
+        </div>
+    </div>
+@endforeach
+
 
           <div class="row">
             <div class="col-md-12">

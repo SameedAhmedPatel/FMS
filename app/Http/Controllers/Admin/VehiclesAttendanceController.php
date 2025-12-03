@@ -49,7 +49,9 @@ class VehiclesAttendanceController extends Controller
     }
 
     public function create(Request $request){
-        $attendanceStatus = AttendanceStatus::where('is_active', 1)->where('id','!=',3)->orderBy('id')->pluck('name', 'id');
+
+        $excludeStatuses = ['OFF'];
+        $attendanceStatus = AttendanceStatus::where('is_active', 1)->where('id','!=',3)->whereNotIn('name', $excludeStatuses)->orderBy('id')->pluck('name', 'id');
 
         $vehicles = Vehicle::with(['station','shiftHours','ibcCenter']);
         $poolvehicles = Vehicle::where('pool_vehicle', 1)->get();

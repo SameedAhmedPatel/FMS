@@ -31,20 +31,24 @@ class DriversAttendanceController extends Controller
     public function create(Request $request){
 
         $stations = Station::where('is_active',1)->get();
-
         $driver_status = DriverStatus::whereIn('id', function ($q) {
-                $q->select('driver_status_id')
-                  ->from('drivers')
-                  ->where('is_active', 1)
-                  ->whereNotNull('driver_status_id');
-            })
-            ->orderBy('name')
+            $q->select('driver_status_id')
+            ->from('drivers')
+            ->where('is_active', 1)
+            ->whereNotNull('driver_status_id');
+        })
+        ->orderBy('name')
+        ->pluck('name', 'id');
+        
+        
+        
+                
+        $excludeStatuses = ['Replace', 'Under maintanance', 'Inspection'];
+
+        $driver_attendance_status = AttendanceStatus::where('is_active', 1)
+            ->whereNotIn('name', $excludeStatuses)
+            ->orderBy('id')
             ->pluck('name', 'id');
-
-
-
-        $driver_attendance_status = AttendanceStatus::where('is_active', 1)->orderBy('id')->pluck('name', 'id');
-
         $drivers = Driver::with(['driverStatus','shiftTiming']);
         $drivers = $drivers->where('is_active', 1);
         if (isset($request->driver_status_id)) {
@@ -57,15 +61,16 @@ class DriversAttendanceController extends Controller
             });
         }
         $drivers = $drivers->orderBy(
-                DriverStatus::select('name')
-                    ->whereColumn('driver_status.id', 'drivers.driver_status_id') // 👈 table name fix
-                    ->limit(1)
-            );
+            DriverStatus::select('name')
+            ->whereColumn('driver_status.id', 'drivers.driver_status_id') // 👈 table name fix
+            ->limit(1)
+        );
         $drivers = $drivers->orderBy('full_name', 'ASC');
         $drivers = $drivers->get();
-
+        
+        
         $selected_driver_status_id = $request->driver_status_id ?? '';
-
+        
         return view('admin.driverAttendances.create',compact('drivers','driver_status','driver_attendance_status','selected_driver_status_id','stations'));
     }
 
