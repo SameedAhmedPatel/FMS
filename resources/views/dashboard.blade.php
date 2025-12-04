@@ -223,16 +223,16 @@
 
     $(document).ready(function () {
         // Initialize DataTables after a short delay to ensure Livewire components are loaded
-        setTimeout(function() {
-            initializeDataTables();
-        }, 2000);
+        // setTimeout(function() {
+        //     initializeDataTables();
+        // }, 2000);
     });
 
     // Only initialize once when Livewire loads
     document.addEventListener('livewire:load', function () {
-        setTimeout(function() {
-            initializeDataTables();
-        }, 1000);
+        // setTimeout(function() {
+        //     initializeDataTables();
+        // }, 1000);
     });
 </script>
 @endsection

@@ -1,3 +1,4 @@
+
 <div>
     <!-- Page header -->
     <div class="page-header page-header-light">
@@ -27,7 +28,7 @@
 
 
     <div>
-        @if($mainVehicles->count() > 0)
+        @if($mainVehicles->count() > 0 || true)
             <div class="card">
                 <div class="card-body">
                     <div class="row mb-3">
@@ -46,8 +47,13 @@
                                 Clear Filters
                             </button>
                         </div>
+                        <div class="col-md-4 col-12">
+                            <label class="font-size-sm">Search:</label>
+                            <input type="text" id="ve_search" class="form-control"
+       wire:model.debounce.500ms="search"
+       placeholder="Search vehicles...">
+                        </div>
                     </div>
-
                     <!-- MAIN TABLE (WITH PAGINATION) -->
                     <div class="table-responsive">
                         <table class="table table-striped table-hover table-sm" id="vehicles-table">
@@ -64,6 +70,7 @@
                             </thead>
 
                             <tbody>
+                            @if($mainVehicles->count() > 0)
                             @foreach($mainVehicles as $vehicle)
                                 <tr>
                                     <td class="font-size-sm" data-label="Serial No">{{ str_pad($vehicle->id, 9, '0', STR_PAD_LEFT) }}</td>
@@ -93,14 +100,31 @@
                                     </td>
                                 </tr>
                             @endforeach
+                            @else
+                            <tr><td colspan="7">
+                                <div class="card">
+                                    <div class="card-body text-center py-5">
+                                        <i class="icon-checkmark-circle text-success" style="font-size: 4rem;"></i>
+                                        <h4 class="text-muted mt-3">All vehicles have valid dates!</h4>
+                                        <p class="text-muted">No expired dates found.</p>
+                                    </div>
+                                </div>
+</td>
+</tr>
+                            @endif
                             </tbody>
                         </table>
                     </div>
 
                     <!-- Show Pagination Only if Filter is Applied -->
-                    <div class="d-flex justify-content-center my-3">
-                        {{ $mainVehicles->links() }}  <!-- Default Pagination -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="text-muted small">
+                            Showing {{ $mainVehicles->firstItem() }} to {{ $mainVehicles->lastItem() }}
+                            of {{ $mainVehicles->total() }} results
+                        </div>
                     </div>
+                    {{ $mainVehicles->links('vendor.pagination.custom-short') }}
+
                 </div>
             </div>
         @else
@@ -197,4 +221,18 @@
             window.history.replaceState({}, document.title, cleanUrl);
         });
     });
+  
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+    const input = document.getElementById('ve_search');
+    input.addEventListener('keyup', function() {
+        @this.set('search', input.value);   // set the property manually
+        @this.getFilteredVehicles();        // optionally call a function
+    });
+ 
 </script>
