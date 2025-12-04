@@ -109,8 +109,8 @@
                                         <p class="text-muted">No expired dates found.</p>
                                     </div>
                                 </div>
-</td>
-</tr>
+                            </td>
+                        </tr>
                             @endif
                             </tbody>
                         </table>
@@ -222,16 +222,10 @@
         });
     });
   
-    function debounce(func, wait) {
-        let timeout;
-        return function(...args) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-    }
-    const input = document.getElementById('ve_search');
-    input.addEventListener('keyup', function() {
-        @this.set('search', input.value);   // set the property manually
+   
+    const input1 = document.getElementById('ve_search');
+    input1.addEventListener('keyup', function() {
+        @this.set('search', input1.value);   // set the property manually
         @this.getFilteredVehicles();        // optionally call a function
     });
  
